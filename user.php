@@ -56,13 +56,14 @@ class User
             $json["field"] = "username";
             $json["message"] = "Ce nom d'utilisateur existe déjà.";
         } else {
-            $query = "insert into " . $this->db_table . " (email, username, password, recipes, frigde, subscribecategories) VALUES ('$email', '$username', '$password', NULL, NULL, NULL)";
+            $query = "insert into " . $this->db_table . " (email, username, password, recipes, fridge, subscribecategories) VALUES ('$email', '$username', '$password', NULL, NULL, NULL)";
             $inserted = mysqli_query($this->db->getDB(), $query);
             if ($inserted == 1) {
                 $json["success"] = 1;
                 $json["field"] = "none";
                 $json["message"] = "Succès sur l'enregistrement";
                 $_SESSION['isLogged'] = true;
+                $json["sessionID"] = session_id();
             } else {
                 $json["success"] = 0;
                 $json["field"] = "none";
