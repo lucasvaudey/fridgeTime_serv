@@ -1,7 +1,7 @@
 <?php
-if (isset($_GET["isAuth"])) {
-    if($_GET["isAuth"] != null){
-        session_id($_GET["isAuth"]);
+if (isset($_POST["isAuth"])) {
+    if($_POST["isAuth"] != null){
+        session_id($_POST["isAuth"]);
     }
     session_start();
     switch (empty($_SESSION)) {

@@ -26,7 +26,6 @@ if (!empty($username) && !empty($password) && !empty($email)) {
 }
 //Login the user
 if (!empty($username) && !empty($password) && empty($email)) {
-    $hashed_password = password_hash($password, PASSWORD_ARGON2I);
-    $json_login = $userObj->login($username, $hashed_password);
+    $json_login = $userObj->login($username, $password);
     echo json_encode($json_login);
 }

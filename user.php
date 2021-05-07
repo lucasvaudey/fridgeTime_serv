@@ -62,8 +62,8 @@ class User
                 $json["success"] = 1;
                 $json["field"] = "none";
                 $json["message"] = "Succès sur l'enregistrement";
-                $_SESSION['isLogged'] = true;
                 $json["sessionID"] = session_id();
+                $_SESSION['username'] = $username;
             } else {
                 $json["success"] = 0;
                 $json["field"] = "none";
@@ -77,22 +77,22 @@ class User
     {
         $json = array();
         $isExistingEmail = $this->isEmailExist($usernameOrEmail);
-        $isExistingUsername = $this->isEmailExist($usernameOrEmail);
+        $isExistingUsername = $this->isLoginExist($usernameOrEmail);
         if (!$isExistingEmail && !$isExistingUsername) {
             $json["success"] = 0;
             $json["field"] = "usernameOrEmail";
             $json["message"] = "Cette e-mail ou utilisateur n'existe pas";
         } else if ($isExistingEmail) {
-            $query = "select * from " . $this->db_table . " where email = '$usernameOrEmail' AND password = '$password'";
-            $result = mysqli_query($this->db->getDB(), $query);
-            if (mysqli_num_rows($result) > 0) {
+            $password_hashed = mysqli_fetch_array(mysqli_query($this->db->getDB(), "SELECT PASSWORD from " . $this->db_table . " where email = '$usernameOrEmail'"));  
+            $password_check = password_verify($password, $password_hashed["PASSWORD"]);
+            if ($password_check) {
                 $json["success"] = 1;
                 $json["field"] = "none";
                 $json["message"] = "Vous pouvez vous connectez";
                 $query = "SELECT username from " . $this->db_table . " where email = '$usernameOrEmail'";
                 $result = mysqli_query($this->db->getDB(), $query);
-                $_SESSION['isLogged'] = true;
                 $_SESSION['username'] = mysqli_fetch_field($result);
+                $json["sessionID"] = session_id();
             } else {
                 $json["success"] = 0;
                 $json["field"] = "password";
@@ -105,7 +105,6 @@ class User
                 $json["success"] = 1;
                 $json["field"] = "none";
                 $json["message"] = "Vous pouvez vous connectez";
-                $_SESSION['isLogged'] = true;
                 $_SESSION['username'] = $usernameOrEmail;
             } else {
                 $json["success"] = 0;
