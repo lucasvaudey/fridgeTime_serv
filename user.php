@@ -89,9 +89,10 @@ class User
                 $json["success"] = 1;
                 $json["field"] = "none";
                 $json["message"] = "Vous pouvez vous connectez";
-                $query = "SELECT username from " . $this->db_table . " where email = '$usernameOrEmail'";
+                $query = "SELECT USERNAME from " . $this->db_table . " where email = '$usernameOrEmail'";
                 $result = mysqli_query($this->db->getDB(), $query);
-                $_SESSION['username'] = mysqli_fetch_field($result);
+                $usernameFetch = mysqli_fetch_array($result);
+                $_SESSION["username"] = $usernameFetch["USERNAME"];
                 $json["sessionID"] = session_id();
             } else {
                 $json["success"] = 0;
@@ -99,12 +100,13 @@ class User
                 $json["message"] = "Le mot de passe est incorrect";
             }
         } else if ($isExistingUsername) {
-            $query = "select * from " . $this->db_table . " where username = '$usernameOrEmail' AND password = '$password'";
-            $result = mysqli_query($this->db->getDB(), $query);
-            if (mysqli_num_rows($result) > 0) {
+            $password_hashed = mysqli_fetch_array(mysqli_query($this->db->getDB(), "SELECT PASSWORD from " . $this->db_table . " where username = '$usernameOrEmail'"));  
+            $password_check = password_verify($password, $password_hashed["PASSWORD"]);
+            if ($password_check) {
                 $json["success"] = 1;
                 $json["field"] = "none";
                 $json["message"] = "Vous pouvez vous connectez";
+                $json["sessionID"] = session_id();
                 $_SESSION['username'] = $usernameOrEmail;
             } else {
                 $json["success"] = 0;
